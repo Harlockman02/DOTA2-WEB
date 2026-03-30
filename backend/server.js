@@ -6,13 +6,13 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static("public"));
 
-const GROQ_API_KEY = "TU_KEY_AQUI"; // Asegúrate de tener tu clave activa
+const GROQ_API_KEY = "TU_KEY_AQUI"; // Reemplaza con tu clave de Groq
 
 app.post("/api/chat", async (req, res) => {
   try {
@@ -25,9 +25,11 @@ app.post("/api/chat", async (req, res) => {
         messages: [
           { 
             role: "system", 
-            content: `Eres un analista de Dota 2 profesional. 
-            REGLAS: 1. No inventes datos. 2. Usa [Nombre] para cada Héroe, Habilidad o Item (ej: [Anti-Mage], [Blink], [Battle Fury]). 
-            3. Responde en español técnico. 4. Explica mecánicas reales del parche actual.` 
+            content: `Eres un analista experto de Dota 2. 
+            REGLAS:
+            1. No inventes datos. Si no sabes un cambio de parche, admítelo.
+            2. Usa siempre [Nombre] para Héroes, Items o Habilidades (ej: [Pudge], [Blink Dagger]).
+            3. Responde en español técnico y profesional.` 
           },
           { role: "user", content: message }
         ]
@@ -40,10 +42,9 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// Endpoints para obtener datos frescos de OpenDota
 app.get("/api/heroes", async (req, res) => {
   const r = await fetch("https://api.opendota.com/api/heroStats");
   res.json(await r.json());
 });
 
-app.listen(PORT, () => console.log(`Servidor listo en puerto ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));

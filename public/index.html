@@ -1,70 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dota 2 Pro Companion</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dota 2 Pro Companion</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">
-        <img src="img/logo.svg" alt="Dota 2" onerror="this.src='https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/global/dota2_logo.png'">
-        <h1>Dota 2 Pro</h1>
-      </div>
-      <div class="search-container">
-        <input type="text" id="search-input" placeholder="Buscar..." />
-        <button id="search-button"><i class="fas fa-search"></i></button>
-      </div>
-    </header>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="img/logo.svg" alt="Dota 2" onerror="this.src='https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/global/dota2_logo.png'">
+                <h1>Dota 2 Pro</h1>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Buscar héroes u objetos...">
+                <button id="search-button"><i class="fas fa-search"></i></button>
+            </div>
+        </header>
 
-    <nav class="tabs">
-      <div class="tab active" data-tab="heroes">Héroes</div>
-      <div class="tab" data-tab="items">Objetos</div>
-      <div class="tab" data-tab="patches">Parches</div>
-    </nav>
+        <nav class="tabs">
+            <div class="tab active" data-tab="heroes">Héroes</div>
+            <div class="tab" data-tab="items">Objetos</div>
+        </nav>
 
-    <main class="content-grid">
-      <section class="main-column">
-        <div class="tab-content active" id="tab-heroes">
-          <div id="heroes-filters" class="filters">
-             <div class="stat-filters">
-                <div class="stat-filter active" data-stat="str">Fuerza</div>
-                <div class="stat-filter active" data-stat="agi">Agilidad</div>
-                <div class="stat-filter active" data-stat="int">Inteligencia</div>
-                <div class="stat-filter active" data-stat="all">Universal</div>
-             </div>
-          </div>
-          <div id="heroes-container" class="main-content"></div>
+        <div class="filters" id="hero-filters">
+            <button class="stat-filter active" data-stat="str">Fuerza</button>
+            <button class="stat-filter active" data-stat="agi">Agilidad</button>
+            <button class="stat-filter active" data-stat="int">Inteligencia</button>
+            <button class="stat-filter active" data-stat="all">Universal</button>
         </div>
-        <div class="tab-content" id="tab-items">
-          <div id="items-container" class="grid-list"></div>
-        </div>
-        <div class="tab-content" id="tab-patches">
-          <div id="patches-container"></div>
-        </div>
-      </section>
 
-      <aside class="chat-container" id="chat-aside">
-        <div class="chat-header">
-          <h3>Asistente IA</h3>
-          <button class="close-chat" onclick="toggleChat()"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="chat-messages" class="chat-messages"></div>
-        <div class="chat-input">
-          <input type="text" id="chat-input" placeholder="Preguntar..." />
-          <button id="send-button"><i class="fas fa-paper-plane"></i></button>
-        </div>
-      </aside>
-    </main>
+        <main id="main-content" class="grid-list"></main>
+    </div>
 
-    <button class="fab-chat" onclick="toggleChat()">
-      <i class="fas fa-comments"></i>
+    <button class="fab-chat" id="fab-chat" onclick="toggleChat()">
+        <i class="fas fa-comment-dots"></i>
     </button>
-  </div>
-  <script src="app.js"></script>
+
+    <aside class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <span>Asistente Pro IA</span>
+            <button onclick="toggleChat()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="chat-input" placeholder="Pregunta algo...">
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </aside>
+
+    <script src="app.js"></script>
 </body>
 </html>

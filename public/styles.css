@@ -1,52 +1,93 @@
 :root {
-    --bg: #0b121e; --card: #1c2735; --gold: #e1bb34; --red: #e63946; --text: #f1faee;
+    --bg: #0b121e; --card: #1c2735; --red: #e63946; --gold: #ffd700; --text: #f1faee;
 }
 
-body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-
-/* BUSCADOR ANIMADO */
-.search-container {
-    display: flex; background: var(--card); border-radius: 20px;
-    padding: 5px 15px; border: 1px solid #444; transition: 0.4s; width: 200px;
+body {
+    background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif;
+    margin: 0; padding: 0; overflow-x: hidden;
 }
-.search-container:focus-within { width: 400px; border-color: var(--red); }
-.search-container input { background: transparent; border: none; color: white; width: 100%; outline: none; }
 
-/* GRID */
-.grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-.card { background: var(--card); border-radius: 8px; overflow: hidden; text-align: center; border: 1px solid #333; cursor: pointer; }
-.card img { width: 100%; }
-.card .info { padding: 10px; font-size: 0.9rem; }
-
-/* CHAT VENTANA */
-.chat-window {
-    position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px;
-    background: var(--card); border-radius: 12px; display: flex; flex-direction: column;
-    transform: translateY(120%); transition: 0.4s ease; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+/* HEADER Y LOGO */
+.main-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 30px; background: rgba(0,0,0,0.5); border-bottom: 1px solid #333;
 }
-.chat-window.open { transform: translateY(0); }
-.chat-header { background: var(--red); padding: 15px; display: flex; justify-content: space-between; border-radius: 12px 12px 0 0; }
-.chat-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; }
-.message { margin-bottom: 10px; padding: 10px; border-radius: 8px; background: #2c3e50; }
-.ai { border-left: 4px solid var(--gold); }
 
-/* BOTÓN FAB */
+.nav-logo { height: 40px; width: auto; } /* ARREGLADO: Logo no es enorme */
+
+.search-wrapper {
+    position: relative; width: 200px; transition: 0.4s;
+    background: var(--card); border-radius: 20px; padding: 5px 15px;
+}
+.search-wrapper:focus-within { width: 400px; border: 1px solid var(--red); }
+.search-wrapper input { background: transparent; border: none; color: white; outline: none; width: 90%; }
+
+/* TABS Y BOTONES */
+.main-tabs { display: flex; justify-content: center; gap: 10px; padding: 20px; }
+.tab-btn {
+    background: var(--card); border: none; color: white; padding: 10px 25px;
+    border-radius: 5px; cursor: pointer; transition: 0.3s;
+}
+.tab-btn.active { background: var(--red); box-shadow: 0 0 15px var(--red); }
+
+.filter-bar { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.stat-btn { background: #333; border: 1px solid #555; color: white; padding: 5px 15px; border-radius: 20px; cursor: pointer; }
+.stat-btn.active { border-color: var(--gold); color: var(--gold); }
+
+/* GRID DE CONTENIDO */
+.content-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px; padding: 0 40px;
+}
+
+.hero-card {
+    background: var(--card); border-radius: 8px; overflow: hidden;
+    transition: 0.3s; cursor: pointer; text-align: center; border: 1px solid #333;
+}
+.hero-card:hover { transform: scale(1.05); border-color: var(--red); }
+.hero-card img { width: 100%; height: auto; }
+.hero-card p { padding: 10px; margin: 0; font-size: 0.9rem; }
+
+/* VISTA DETALLE */
+.detail-view { padding: 40px; max-width: 1000px; margin: auto; animation: fadeIn 0.5s; }
+.detail-header { display: flex; gap: 30px; align-items: center; margin-bottom: 30px; }
+.hero-portrait { width: 250px; border-radius: 12px; border: 3px solid var(--red); }
+
+/* ITEMS EN FILA (ARREGLADO) */
+.items-row { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
+.item-slot {
+    background: #000; padding: 5px; border-radius: 5px; border: 1px solid #444;
+    width: 80px; text-align: center; cursor: pointer;
+}
+.item-slot img { width: 100%; border-radius: 3px; }
+.item-slot span { font-size: 0.7rem; color: var(--gold); }
+
+/* TALENTO (ARREGLADO) */
+.talent-tree { background: #111; border: 1px solid var(--gold); border-radius: 10px; padding: 15px; }
+.t-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
+.node {
+    background: var(--gold); color: black; width: 30px; height: 30px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+}
+
+/* CHAT OVERLAY */
+.chat-overlay {
+    position: fixed; bottom: 100px; right: 30px; width: 380px; height: 550px;
+    background: var(--card); border-radius: 15px; flex-direction: column;
+    display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 2000;
+}
+.chat-overlay.open { display: flex; animation: slideUp 0.3s; }
+.chat-header { background: var(--red); padding: 15px; display: flex; justify-content: space-between; border-radius: 15px 15px 0 0; }
+.chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.chat-footer { padding: 15px; display: flex; gap: 10px; background: rgba(0,0,0,0.2); }
+.chat-footer input { flex: 1; background: #0b121e; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; }
+.chat-footer button { background: var(--red); border: none; color: white; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+
+/* BOTÓN FLOTANTE */
 .fab-chat {
-    position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
-    background: var(--red); border-radius: 50%; color: white; font-size: 1.5rem;
-    border: none; cursor: pointer; z-index: 1001; box-shadow: 0 4px 15px rgba(230,57,70,0.4);
+    position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
+    background: var(--red); border-radius: 50%; color: white; font-size: 1.8rem;
+    border: none; cursor: pointer; box-shadow: 0 5px 20px rgba(230, 57, 70, 0.5); z-index: 2001;
 }
 
-/* TALENTOS */
-.talent-tree { background: #000; padding: 10px; border: 1px solid var(--gold); border-radius: 8px; }
-.t-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
-.node { background: var(--gold); color: black; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-
-/* ICONOS CHAT */
-.chat-icon-text { display: inline-flex; align-items: center; gap: 5px; color: var(--gold); font-weight: bold; }
-.chat-icon-text img { height: 16px; border-radius: 2px; }
-
-@media (max-width: 600px) {
-    .chat-window { width: 90vw; right: 5vw; }
-    .search-container:focus-within { width: 200px; }
-}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

@@ -12,11 +12,11 @@
   <div class="container">
     <header>
       <div class="logo">
-        <img src="img/logo.svg" alt="Dota 2 Pro Logo">
+        <img src="img/logo.svg" alt="Dota 2" onerror="this.src='https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/global/dota2_logo.png'">
         <h1>Dota 2 Pro</h1>
       </div>
       <div class="search-container">
-        <input type="text" id="search-input" placeholder="Buscar héroe o item..." />
+        <input type="text" id="search-input" placeholder="Buscar..." />
         <button id="search-button"><i class="fas fa-search"></i></button>
       </div>
     </header>
@@ -40,27 +40,30 @@
           </div>
           <div id="heroes-container" class="main-content"></div>
         </div>
-
         <div class="tab-content" id="tab-items">
           <div id="items-container" class="grid-list"></div>
         </div>
-
         <div class="tab-content" id="tab-patches">
           <div id="patches-container"></div>
         </div>
       </section>
 
-      <aside class="chat-container">
+      <aside class="chat-container" id="chat-aside">
         <div class="chat-header">
-          <h3><i class="fas fa-robot"></i> Asistente IA</h3>
+          <h3>Asistente IA</h3>
+          <button class="close-chat" onclick="toggleChat()"><i class="fas fa-times"></i></button>
         </div>
         <div id="chat-messages" class="chat-messages"></div>
         <div class="chat-input">
-          <input type="text" id="chat-input" placeholder="Pregunta por builds o counters..." />
+          <input type="text" id="chat-input" placeholder="Preguntar..." />
           <button id="send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
       </aside>
     </main>
+
+    <button class="fab-chat" onclick="toggleChat()">
+      <i class="fas fa-comments"></i>
+    </button>
   </div>
   <script src="app.js"></script>
 </body>

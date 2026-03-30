@@ -11,9 +11,7 @@
 <body>
     <header class="main-header">
         <div class="logo-area">
-            <svg width="40" height="40" viewBox="0 0 512 512" class="nav-logo">
-                <path fill="#e63946" d="M448 32H64C46.3 32 32 46.3 32 64v384c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V64c0-17.7-14.3-32-32-32zm-16 352H256V256h176v128zm0-160H256V80h160c8.8 0 16 7.2 16 16v128zM80 96c0-8.8 7.2-16 16-16h128v288H96c-8.8 0-16-7.2-16-16V96z"/>
-            </svg>
+            <img src="img/logo.svg" alt="Dota 2" class="nav-logo" onerror="this.src='https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/global/dota2_logo.png'">
             <h1>Dota 2 <span class="red">Pro</span></h1>
         </div>
         <div class="search-wrapper">
@@ -46,7 +44,7 @@
         </div>
         <div id="chat-messages" class="chat-body"></div>
         <div class="chat-footer">
-            <input type="text" id="chat-input" placeholder="Pregunta algo...">
+            <textarea id="chat-input" placeholder="Pregunta algo..." rows="1"></textarea>
             <button id="send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
     </aside>

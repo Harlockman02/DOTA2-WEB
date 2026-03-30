@@ -1,12 +1,34 @@
 let allHeroes = [], allItems = {}, allAbilities = {};
 let activeStats = ["str", "agi", "int", "all"];
 
+function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/[&<>"]+/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+function addIconsToText(text) {
+    if (!text) return "";
+
+    return text.replace(/\[([^\]]+)\]/g, (full, name) => {
+        const nameLower = name.toLowerCase().trim();
+        const hero = allHeroes.find(h => h.localized_name && h.localized_name.toLowerCase() === nameLower);
+        if (hero) {
+            return `<img src="https://cdn.cloudflare.steamstatic.com${hero.img}" class="chat-inline-icon" alt="${escapeHtml(hero.localized_name)}" title="${escapeHtml(hero.localized_name)}"> ${escapeHtml(name)}`;
+        }
+        const item = Object.values(allItems).find(i => i.dname && i.dname.toLowerCase() === nameLower);
+        if (item) {
+            return `<img src="https://cdn.cloudflare.steamstatic.com${item.img}" class="chat-inline-icon" alt="${escapeHtml(item.dname)}" title="${escapeHtml(item.dname)}"> ${escapeHtml(name)}`;
+        }
+        return escapeHtml(full);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const [h, i, a] = await Promise.all([
             fetch("/api/heroes").then(r => r.json()),
             fetch("https://api.opendota.com/api/constants/items").then(r => r.json()),
-            fetch("https://api.opendota.com/api/constants/abilities").then(r => r.json())
+            fetch("/api/abilities").then(r => r.json())
         ]);
         allHeroes = h; allItems = i; allAbilities = a;
         renderHeroes(allHeroes);
@@ -14,10 +36,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (e) { console.error("Error cargando la base de datos:", e); }
 });
 
+function translateDesc(text) {
+    if (!text) return text;
+    return fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+    }).then(r => r.json()).then(d => d.translation).catch(() => text);
+}
+
 function initEvents() {
     // Eventos de Chat
     document.getElementById("send-button").onclick = sendMessage;
-    document.getElementById("chat-input").onkeydown = (e) => e.key === "Enter" && sendMessage();
+    document.getElementById("chat-input").onkeydown = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    };
     document.getElementById("fab-open-chat").onclick = toggleChat;
     document.getElementById("chat-close-btn").onclick = toggleChat;
 
@@ -83,7 +119,7 @@ function renderItems() {
     `).join("");
 }
 
-function showHeroDetail(id) {
+async function showHeroDetail(id) {
     const hero = allHeroes.find(h => h.id === id);
     const container = document.getElementById("content-area");
     document.getElementById("filter-bar").style.display = "none";
@@ -91,7 +127,10 @@ function showHeroDetail(id) {
 
     // Buscar habilidades reales del heroe
     const shortName = hero.name.replace("npc_dota_hero_", "");
-    const skills = Object.values(allAbilities).filter(a => a.name && a.name.includes(shortName)).slice(0, 5);
+    let skills = Object.entries(allAbilities).filter(([key, value]) => key.startsWith(shortName + "_") && !key.includes("special_bonus")).map(([key, value]) => ({ name: key, ...value })).slice(0, 5);
+    
+    // Traducir descripciones
+    skills = await Promise.all(skills.map(async s => ({ ...s, desc: await translateDesc(s.desc) })));
 
     container.innerHTML = `
         <button class="back-btn" onclick="renderHeroes(allHeroes)">← Volver</button>
@@ -107,8 +146,8 @@ function showHeroDetail(id) {
             <h3>Habilidades Principales</h3>
             <div class="flex-row">
                 ${skills.map(s => `
-                    <div class="skill-item">
-                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/${s.name}.png" onerror="this.src='https://via.placeholder.com/64'">
+                    <div class="skill-item" title="${s.desc || 'Descripción no disponible'}">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/${s.name}.png" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjY2NjIi8+Cjx0ZXh0IHg9IjMyIiB5PSIzNCIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U2tpbGw8L3RleHQ+Cjwvc3ZnPg=='">
                         <small>${s.dname || 'Skill'}</small>
                     </div>
                 `).join("")}
@@ -129,16 +168,25 @@ function showHeroDetail(id) {
 // LÓGICA DEL CHAT
 function toggleChat() {
     const win = document.getElementById("chat-window");
-    win.style.display = (win.style.display === "flex") ? "none" : "flex";
+    const isVisible = win.style.display === "flex";
+    win.style.display = isVisible ? "none" : "flex";
+    if (!isVisible) {
+        setTimeout(() => {
+            const input = document.getElementById("chat-input");
+            input.focus();
+            input.select();
+        }, 100);
+    }
 }
 
 async function sendMessage() {
     const input = document.getElementById("chat-input");
     const text = input.value.trim();
-    if(!text) return;
+    if (!text) return;
 
     const chatBody = document.getElementById("chat-messages");
-    chatBody.innerHTML += `<div class="msg user">${text}</div>`;
+    const userMessage = addIconsToText(escapeHtml(text));
+    chatBody.innerHTML += `<div class="msg user">${userMessage}</div>`;
     input.value = "";
     chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -149,7 +197,9 @@ async function sendMessage() {
             body: JSON.stringify({ message: text })
         });
         const data = await response.json();
-        chatBody.innerHTML += `<div class="msg ai">${marked.parse(data.reply)}</div>`;
+        const aiRaw = data.reply || "";
+        const aiWithIcons = addIconsToText(escapeHtml(aiRaw));
+        chatBody.innerHTML += `<div class="msg ai">${aiWithIcons}</div>`;
     } catch (e) {
         chatBody.innerHTML += `<div class="msg ai">Error: No pude conectar con la IA.</div>`;
     }

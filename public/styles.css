@@ -33,7 +33,7 @@ body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; 
 /* DETALLE */
 .detail-view { padding: 30px 5%; max-width: 800px; margin: auto; }
 .flex-row { display: flex; gap: 10px; flex-wrap: wrap; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; }
-.skill-item { width: 70px; text-align: center; }
+.skill-item { width: 80px; text-align: center; }
 .skill-item img { width: 100%; border: 1px solid var(--gold); border-radius: 4px; }
 
 .talent-box { background: #111; border: 1px solid var(--gold); border-radius: 8px; padding: 15px; }
@@ -49,12 +49,58 @@ body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; 
 .chat-header { background: var(--red); padding: 10px; display: flex; justify-content: space-between; }
 .chat-body { flex: 1; padding: 10px; overflow-y: auto; font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px; }
 .chat-footer { padding: 10px; display: flex; gap: 5px; }
-.chat-footer input { flex: 1; background: #000; border: 1px solid #444; color: white; padding: 5px; }
-.msg { padding: 8px; border-radius: 5px; max-width: 85%; }
+.chat-footer textarea { flex: 1; background: var(--card); border: 1px solid #444; color: white; padding: 5px; resize: none; }
+.chat-inline-icon { width: 18px; height: 18px; vertical-align: middle; margin-right: 4px; border-radius: 4px; }
+.msg { padding: 8px; border-radius: 5px; max-width: 85%; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
 .user { align-self: flex-end; background: var(--red); }
 .ai { align-self: flex-start; background: #333; }
+.chat-token { text-decoration: underline dotted; cursor: help; }
+.chat-token:hover { color: #ffd700; }
+.chat-inline-icon { width: 18px; height: 18px; vertical-align: bottom; margin-right: 4px; border-radius: 3px; }
 
 .fab-chat {
     position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
     border-radius: 50%; background: var(--red); color: white; border: none; font-size: 1.5rem; cursor: pointer;
+}
+
+/* FILTER BAR */
+.filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px 5%;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.stat-btn {
+    background: var(--card);
+    border: var(--card);
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+    border-radius: 100px;
+}
+
+.stat-btn:hover {
+    background: #2a3a4a;
+}
+
+.stat-btn.active {
+    background: var(--card);
+    border: 1px solid var(--gold);
+    font-weight: bold;
+}
+.back-btn {
+    background: var(--card);
+    border: 1px solid var(--gold);
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+    border-radius: 50px;
 }

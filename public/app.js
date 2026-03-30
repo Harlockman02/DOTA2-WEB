@@ -16,9 +16,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function initEvents() {
     document.getElementById("send-button").onclick = sendMessage;
-    document.getElementById("chat-input").onkeypress = (e) => e.key === "Enter" && sendMessage();
+    document.getElementById("chat-input").addEventListener("keypress", (e) => {
+        if(e.key === "Enter") sendMessage();
+    });
     
-    // Filtros de atributos
     document.querySelectorAll(".stat-btn").forEach(btn => {
         btn.onclick = () => {
             btn.classList.toggle("active");
@@ -29,7 +30,6 @@ function initEvents() {
         };
     });
 
-    // Pestañas
     document.getElementById("btn-heroes").onclick = () => {
         document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
         document.getElementById("btn-heroes").classList.add("active");
@@ -48,7 +48,6 @@ function initEvents() {
 function applyFilters() {
     const term = document.getElementById("search-input").value.toLowerCase();
     const isHeroTab = document.getElementById("btn-heroes").classList.contains("active");
-    
     if(isHeroTab) {
         const filtered = allHeroes.filter(h => {
             const attr = h.primary_attr === "str" ? "str" : h.primary_attr === "agi" ? "agi" : h.primary_attr === "int" ? "int" : "all";
@@ -74,9 +73,9 @@ function renderItems() {
     const container = document.getElementById("content-area");
     document.getElementById("filter-bar").style.display = "none";
     container.className = "content-grid";
-    const items = Object.values(allItems).filter(i => i.dname && i.cost > 0).slice(0, 100);
+    const items = Object.values(allItems).filter(i => i.dname && i.cost > 0).slice(0, 80);
     container.innerHTML = items.map(i => `
-        <div class="item-card-small" onclick="alert('${i.dname}: ${i.cost} oro')">
+        <div class="item-card-small">
             <img src="https://cdn.cloudflare.steamstatic.com${i.img}">
             <p>${i.dname}</p>
         </div>
@@ -89,13 +88,16 @@ function showHeroDetail(id) {
     document.getElementById("filter-bar").style.display = "none";
     container.className = "detail-view-container";
 
+    // Habilidades: OpenDota asocia habilidades por nombre de héroe
+    const hName = hero.name.replace("npc_dota_hero_", "");
+    const skills = Object.values(allAbilities).filter(a => a.name && a.name.startsWith(hName)).slice(0, 4);
+
     const isCarry = hero.roles.includes("Carry");
-    const items = isCarry ? ["power_treads", "bfury", "manta", "black_king_bar", "abyssal_blade", "swift_blink"] 
+    const build = isCarry ? ["power_treads", "bfury", "manta", "black_king_bar", "abyssal_blade", "swift_blink"] 
                          : ["arcane_boots", "blink", "force_staff", "glimmer_cape", "aeon_disk", "ghost"];
 
     container.innerHTML = `
-        <button class="back-btn" onclick="renderHeroes(allHeroes)">← Regresar</button>
-        
+        <button class="back-btn" onclick="renderHeroes(allHeroes)">← Volver</button>
         <div class="hero-detail-header">
             <img src="https://cdn.cloudflare.steamstatic.com${hero.img}" class="hero-big-img">
             <div class="hero-text-info">
@@ -104,47 +106,61 @@ function showHeroDetail(id) {
             </div>
         </div>
 
-        <div class="meta-section">
-            <h3>Core Build Meta</h3>
-            <div class="items-flex">
-                ${items.map(k => {
+        <div class="section">
+            <h3>Habilidades de Combate</h3>
+            <div class="skills-row">
+                ${skills.map(s => `
+                    <div class="skill-box">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/${s.name}.png">
+                        <small>${s.dname || "Habilidad"}</small>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Build Meta Core</h3>
+            <div class="items-row">
+                ${build.map(k => {
                     const item = Object.values(allItems).find(i => i.img && i.img.includes(k));
                     return item ? `<div class="item-box"><img src="https://cdn.cloudflare.steamstatic.com${item.img}"><small>${item.cost}</small></div>` : "";
                 }).join("")}
             </div>
         </div>
 
-        <div class="talents-section">
+        <div class="section">
             <h3>Árbol de Talentos</h3>
             <div class="talent-tree">
-                <div class="talent-row"><span>+2s Aturdimiento</span> <div class="node">25</div> <span>+25% Evasión</span></div>
-                <div class="talent-row"><span>+150 Rango</span> <div class="node">20</div> <span>+40 Daño</span></div>
-                <div class="talent-row"><span>+250 Vida</span> <div class="node">15</div> <span>+15 Atributos</span></div>
-                <div class="talent-row"><span>+2 Regen Mana</span> <div class="node">10</div> <span>+10% Oro</span></div>
+                <div class="t-row"><span>Aturdimiento +2s</span> <div class="node">25</div> <span>Evasión +20%</span></div>
+                <div class="t-row"><span>Daño +50</span> <div class="node">20</div> <span>Rango +150</span></div>
+                <div class="t-row"><span>Vida +250</span> <div class="node">15</div> <span>Atributos +15</span></div>
+                <div class="t-row"><span>Regen Mana +3</span> <div class="node">10</div> <span>Oro +10%</span></div>
             </div>
         </div>
     `;
 }
 
-function toggleChat() {
-    document.getElementById("chat-window").classList.toggle("open");
-}
+function toggleChat() { document.getElementById("chat-window").classList.toggle("open"); }
 
 async function sendMessage() {
     const input = document.getElementById("chat-input");
     const msg = input.value.trim();
     if(!msg) return;
 
-    const body = document.getElementById("chat-messages");
-    body.innerHTML += `<div class="msg user">${msg}</div>`;
+    const chatBody = document.getElementById("chat-messages");
+    chatBody.innerHTML += `<div class="msg user">${msg}</div>`;
     input.value = "";
 
-    const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ message: msg })
-    });
-    const data = await res.json();
-    body.innerHTML += `<div class="msg ai">${marked.parse(data.reply)}</div>`;
-    body.scrollTop = body.scrollHeight;
+    try {
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        chatBody.innerHTML += `<div class="msg ai">${marked.parse(data.reply)}</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    } catch(e) {
+        chatBody.innerHTML += `<div class="msg ai error">Error al conectar con el servidor.</div>`;
+    }
 }
